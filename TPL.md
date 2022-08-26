@@ -1,0 +1,1603 @@
+# 快速排序
+
+```c++
+void quick_sort(int q[], int l, int r)
+{
+    if (l >= r)
+        return;
+    int i = l - 1, j = r + 1, x = q[l + r >> 1];
+    while (i < j)
+    {
+        do
+            i++;
+        while (q[i] < x); //找到大于等于x的元素
+        do
+            j--;
+        while (q[j] > x); //找到小于等于x的元素
+        if (i < j)
+            swap(q[i], q[j]); //交换两元素
+    }
+    quick_sort(q, l, j), quick_sort(q, j + 1, r);
+}
+```
+
+# 归并排序
+
+```c++
+void merge_sort(int q[], int l, int r)
+{
+    if (l >= r)
+        return; //只有一个元素
+    int mid = l + r >> 1;
+    merge_sort(q, l, mid);     //递归左边
+    merge_sort(q, mid + 1, r); //递归右边
+    int k = 0, i = l, j = mid + 1;
+    while (i <= mid && j <= r)
+        if (q[i] <= q[j]) 
+            tmp[k++] = q[i++];
+        else
+            tmp[k++] = q[j++]; //将小的元素放入数组
+    while (i <= mid)
+        tmp[k++] = q[i++]; //将左边剩余部分插入数组
+    while (j <= r)
+        tmp[k++] = q[j++]; //将右边剩余部分插入数组
+    for (i = l, j = 0; i <= r; i++, j++)
+        q[i] = tmp[j];
+}
+```
+
+# 整数二分
+
+## 1.模板一
+
+```c++
+int bsearch_1(int l, int r)
+{
+    while (l < r)
+    {
+        int mid = l + r + 1 >> 1;
+        if (check(mid))
+            l = mid;
+        else
+            r = mid - 1;
+    }
+    return l;
+}
+```
+
+## 2.模板二
+
+```c++
+int bsearch_2(int l, int r)
+{
+    while (l < r)
+    {
+        int mid = l + r >> 1;
+        if (check(mid))
+            r = mid;
+        else
+            l = mid + 1;
+    }
+    return l;
+}
+```
+
+# 浮点数二分
+
+```c++
+double bsearch_3(double l, double r)
+{
+    const double eps = 1e-8; // eps表示精度
+    while (r - l > eps)
+    {
+        double mid = (l + r) / 2;
+        if (check(mid))
+            r = mid;
+        else
+            l = mid;
+    }
+    return l;
+}
+```
+
+# 高精度
+
+## 1.加法
+
+```c++
+vector<int> add(vector<int> &A, vector<int> &B)
+{
+    vector<int> C;
+    int t = 0;
+    for (int i = 0; i < A.size() || i < B.size(); i++)
+    {
+        if (i < A.size())
+            t += A[i];
+        if (i < B.size())
+            t += B[i];
+        C.push_back(t % 10);
+        t /= 10;
+    }
+    if (t)
+        C.push_back(1);
+    return C;
+}
+```
+
+## 2.减法
+
+```c++
+/*bool cmp(vector<int> &A, vector<int> &B) //判断是否 A > B
+{
+    if (A.size() != B.size())
+        return A.size() > B.size();
+    for (int i = A.size() - 1; i >= 0; i--)
+        if (A[i] != B[i])
+            return A[i] > B[i];
+    return true;
+}*/
+vector<int> sub(vector<int> &A, vector<int> &B)
+{
+    vector<int> C;
+    int t = 0;
+    for (int i = 0; i < A.size(); i++)
+    {
+        t = A[i] - t;
+        if (i < B.size())
+            t -= B[i];
+        C.push_back((t + 10) % 10);
+        if (t < 0)
+            t = 1;
+        else
+            t = 0;
+    }
+    while (C.size() > 1 && C.back() == 0)
+        C.pop_back(); //去掉前导0
+    return C;
+}
+/*if (cmp(A, B))
+{
+    auto C = sub(A, B);
+    for (int i = C.size() - 1; i >= 0; i--)
+        cout << C[i];
+}
+else
+{
+    auto C = sub(B, A);
+    printf("-");
+    for (int i = C.size() - 1; i >= 0; i--)
+        cout << C[i];
+}*/
+```
+
+## 3.乘法
+
+```c++
+vector<int> mul(vector<int> &A, int b)
+{
+    vector<int> C;
+    int t = 0;
+    for (int i = 0; i < A.size() || t; i++)
+    {
+        if (i < A.size())
+            t += A[i] * b;
+        C.push_back(t % 10);
+        t /= 10;
+    }
+    while (t)
+    {
+        C.push_back(t % 10);
+        t /= 10;
+    }
+    while (C.size() > 1 && C.back() == 0)
+        C.pop_back();//去掉前导0
+    return C;
+}
+```
+
+## 4.除法
+
+```c++
+vector<int> div(vector<int> &A, int b, int &r) // r为余数
+{
+    vector<int> C;
+    r = 0;
+    for (int i = A.size() - 1; i >= 0; i--)
+    {
+        r = r * 10 + A[i];
+        C.push_back(r / b);
+        r %= b;
+    }
+    reverse(C.begin(), C.end()); //头文件algorithm
+    while (C.size() > 1 && C.back() == 0)
+        C.pop_back(); //去掉前导0
+    return C;
+}
+```
+
+# 前缀和
+
+## 1.一维
+
+```c++
+for (int i = 1; i <= n; i++)
+    s[i] = s[i - 1] + a[i];
+ans = s[r] - s[l - 1]; // [l,r]区间和
+```
+
+## 2.二维
+
+```c++
+for (int i = 1; i <= n; i++)
+    for (int j = 1; j <= m; j++)
+        s[i][j] = s[i - 1][j] + s[i][j - 1] - s[i - 1][j - 1] + a[i][j];
+ans = s[x2][y2] - s[x1 - 1][y2] - s[x2][y1 - 1] + s[x1 - 1][y1 - 1]; //求子矩阵和
+```
+
+# 差分
+
+## 1.一维
+
+```c++
+void insert(int l, int r, int c)
+{
+    b[l] += c;
+    b[r + 1] -= c;
+}
+for (int i = 1; i <= n; i++)
+    insert(i, i, a[i]);//构造差分数组
+```
+
+## 2.二维
+
+````c++
+void insert(int x1, int y1, int x2, int y2, int c)
+{
+    b[x1][y1] += c;
+    b[x2 + 1][y1] -= c;
+    b[x1][y2 + 1] -= c;
+    b[x2 + 1][y2 + 1] += c;
+}
+for (int i = 1; i <= n; i++)
+    for (int j = 1; j <= m; j++)
+        insert(i, j, i, j, a[i][j]);
+````
+
+#  位运算
+
+```c++
+//求x的二进制形式第k位是几
+x >> k & 1;
+
+//求x的二进制形式的最后一位1
+int lowbit(int x) 
+{
+    return x & -x;
+}
+```
+
+# 离散化
+
+```c++
+vector<int> alls; //存储待离散化的数
+sort(alls.begin(), alls.end());
+alls.erase(unique(alls.begin(), alls.end()), alls.end()); //去掉重复数字
+
+//找出x对应离散化的值
+int find(int x)
+{
+    int l = 0, r = alls.size() - 1;
+    while (l < r)
+    {
+        int mid = l + r >> 1;
+        if (alls[mid] >= x)
+            r = mid;
+        else
+            l = mid + 1;
+    }
+    return l + 1; //"+ 1"说明是从 1 ~ N 离散化的
+}
+```
+
+# 区间合并
+
+```c++
+void merge(vector < pair<int, int>> & a)
+{
+    vector<pair<int, int>> res;
+    sort(a.begin(), a.end()); //先按a.first排序，再按a.second排序
+    int st = -2e9, ed = -2e9; //具体看题目
+    for (auto item : a)
+    {
+        if (ed < item.first) //两区间没有交集
+        {
+            if (st != -2e9) // st不等于初始值
+                res.push_back({st, ed});
+            st = item.first, ed = item.second;
+        }
+        else
+            ed = max(ed, item.second);
+    }
+    if (st != -2e9)
+        res.push_back({st, ed}); //最后一个区间
+    a = res;
+}
+```
+
+# 单链表
+
+```c++
+int head, e[N], ne[N], idx;
+//初始化
+void init()
+{
+    head = -1, idx = 0;
+}
+//头插法
+void addtohead(int x)
+{
+    e[idx] = x, ne[idx] = head, head = idx++;
+}
+//插到下标是k的点的后面
+void add(int k, int x)
+{
+    e[idx] = x, ne[idx] = ne[k], ne[k] = idx++;
+}
+//将下标是k的后面的点删除
+void remove(int k)
+{
+    ne[k] = ne[ne[k]];
+}
+//删除头节点
+head = ne[head];
+//遍历
+for (int i = head; i != -1; i = ne[i])
+```
+
+# 双链表
+
+```c++
+int e[N], l[N], r[N], idx;
+//初始化
+void init()
+{
+    r[0] = 1, l[1] = 0, idx = 2;
+}
+//插到下标是k的点的右面
+void add(int k, int x)
+{
+    e[idx] = x, r[idx] = r[k], l[idx] = k, l[r[k]] = idx, r[k] = idx, idx++;
+}
+//将下标是k的点删除
+void remove(int k)
+{
+    r[l[k]] = r[k], l[r[k]] = l[k];
+}
+//在最左侧插入一个数
+add(0, x);
+//在最右侧插入一个数
+add(l[1], x);
+//遍历
+for (int i = r[0]; i != 1; i = r[i])
+```
+
+# 栈
+
+```c++
+// tt表示栈顶
+int stk[N], tt = 0;
+// 向栈顶插入一个数
+stk[++tt] = x;
+// 从栈顶弹出一个数
+tt--;
+// 栈顶的值
+stk[tt];
+// 判断栈是否为空
+if (tt) 不空
+else 空
+```
+
+# 队列
+
+```c++
+// hh 表示队头，tt表示队尾
+int q[N], hh = 0, tt = -1;
+// 向队尾插入一个数
+q[++tt] = x;
+// 从队头弹出一个数
+hh++;
+// 从队尾弹出一个数
+tt--;
+// 队头的值
+q[hh];
+// 判断队列是否为空
+if (hh <= tt) 不空
+else 空
+```
+
+# KMP
+
+```c++
+char s[m], p[n];
+int ne[N];
+//求next[]
+for (int i = 2, j = 0; i <= n; i++)
+{
+    while (j && p[j + 1] != p[i])
+        j = ne[j];
+    if (p[j + 1] == p[i])
+        j++;
+    ne[i] = j;
+}
+
+//模板串p与模式串s匹配
+for (int i = 1, j = 0; i <= m; i++)
+{
+    while (j && p[j + 1] != s[i])
+        j = ne[j];
+    if (p[j + 1] == s[i])
+        j++;
+    if (j == n)
+    {
+        //匹配成功
+        printf("%d ", i - n); //出现位置的起始下标
+        j = ne[j];
+    }
+}
+```
+
+# Trie
+
+```c++
+int son[N][26], cnt[N], idx; //下标是0的点既是根节点又是空节点
+//插入一个字符串
+void insert(char str[])
+{
+    int p = 0;
+    for (int i = 0; str[i]; i++)
+    {
+        int u = str[i] - 'a'; //字符串全是小写字母
+        if (!son[p][u])
+            son[p][u] = ++idx;
+        p = son[p][u];
+    }
+    cnt[p]++;
+}
+//询问字符串在集合中出现的次数
+int query(char str[])
+{
+    int p = 0;
+    for (int i = 0; str[i]; i++)
+    {
+        int u = str[i] - 'a';
+        if (!son[p][u])
+            return 0;
+        p = son[p][u];
+    }
+    return cnt[p];
+}
+```
+
+# 并查集
+
+```c++
+int p[N], size[N]; //p[]存放每个点的父节点,size[]存放每个集合的点的个数
+
+//返回x的祖宗节点+路径压缩
+int find(int x)
+{
+    if (p[x] != x)
+        p[x] = find(p[x]);
+    return p[x];
+}
+
+//初始化
+p[i] = i;
+size[i] = 1;
+
+//两个集合合并成树
+p[find(x)] = find(y);
+size[find(y)] += size[find(x)];//if(find(x) != find(y))
+
+//查询两个元素是否在一个集合里
+if (find(x) == find(y)) // yes
+else                    // no
+```
+
+# 堆
+
+```c++
+int h[N], size, ph[N], hp[N]; // ph[],hp[]映射时使用
+void up(int u)
+{
+    while (u / 2 && h[u / 2] > h[u])
+    {
+        swap(h[u / 2], h[u]);
+        u /= 2;
+    }
+}
+void down(int u)
+{
+    int t = u;
+    if (u * 2 <= size && h[u * 2] < h[t])
+        t = u * 2; //左儿子
+    if (u * 2 + 1 <= size && h[u * 2 + 1] < h[t])
+        t = u * 2 + 1; //右儿子
+    if (u != t)
+    {
+        swap(h[u], h[t]); //交换根节点
+        down(t);
+    }
+}
+
+//堆排序
+for (int i = n / 2; i; i--)    
+    down(i);
+//集合中最小值
+h[1]
+//删除第k个元素
+h[k] = h[size];//size = n
+size--;
+down(k), up[k];
+//修改任意元素
+h[k] = x;
+down(k), up(k);
+
+//堆交换
+void heap_swap(int a, int b)//down()和up()函数中需将swap改为heap_swap
+{
+    swap(ph[hp[a]], ph[hp[b]]);
+    swap(hp[a], hp[b]);
+    swap(h[a], h[b]);
+}
+ph[++m] = size, hp[size] = m;//ph[], hp[]初始化
+```
+
+# 哈希表
+
+## 1.拉链法
+
+```c++
+int h[N], e[N], ne[N], idx;
+memset(h, -1, sizeof(h)); //初始化h[]
+//插入
+void insert(int x)
+{
+    int k = (x % key + key) % key; // key为与N相近的素数
+    e[idx] = x, ne[idx] = h[k], h[k] = idx, idx++;
+}
+//查询
+bool find(int x)
+{
+    int k = (x % key + key) % key;
+    for (int i = h[k]; i != -1; i = ne[i])
+        if (e[i] == x)
+            return true;
+    return false;
+}
+```
+
+## 2.开放寻址法
+
+```c++
+const int null = 0x3f3f3f3f; // null不在数据范围内
+int h[N];                    // N开成两倍
+memset(h, 0x3f, sizeof(h));  //初始化
+int find(int x)
+{
+    int k = (x % key + key) % key;
+    while (h[k] != null && h[k] != x)
+    {
+        k++;
+        if (k == N)
+            k = 0;
+    }
+    return k;
+}
+//插入
+int k = find(x);
+h[k] = x;
+//查询
+int k = find(x);
+if (h[k] != null) // yes
+else              // no
+```
+
+# 字符串哈希
+
+```c++
+//P = 131 or 13331
+//Q = 2^64
+const int P = 131;
+unsigned long long h[N], p[N];
+unsigned long long get(int l, int r)
+{
+    return h[r] - h[l - 1] * p[r - l + 1];//返回[l, r]之间字符串的哈希值
+}
+//初始化
+p[0] = 1;
+for (int i = 1; i <= n; i++)
+{
+    p[i] = p[i - 1] * P;
+    h[i] = h[i - 1] * P + str[i]; // scanf("%s",str+1);
+}
+```
+
+# DFS
+
+```c++
+int n;
+bool vis[N];
+void dfs(int u)
+{
+    if (u == n)
+    {
+        //输出
+        return;
+    }
+    for (int i = 0; i < n; i++) //对每一个子节点遍历
+    {
+        if (!vis[i]) //满足条件
+        {
+            vis[i] = true;
+            dfs(u + 1);
+            vis[i] = false; //回溯
+        }
+    }
+}
+```
+
+# BFS
+
+```c++
+char g[N][N]; //存储地图
+int d[N][N];
+int bfs()
+{
+    queue<pair<int, int>> q;
+    memset(d, -1, sizeof d);
+    q.push({stx, sty}); //起点坐标
+    d[stx][sty] = 0;
+    while (!q.empty())
+    {
+        pair<int, int> t = q.front();
+        q.pop();
+        int dx[4] = {-1, 0, 1, 0}, dy[4] = {0, -1, 0, 1};
+        for (int i = 0; i < 4; i++)
+        {
+            int x = dx[i] + t.first, y = dy[i] + t.second;
+            if (x >= 0 && x < n && y >= 0 && y < m && g[x][y] == 0 && d[x][y] == -1) // g[x][y]可通过
+            {
+                d[x][y] = d[t.first][t.second] + 1;
+                q.push({x, y});
+            }
+        }
+    }
+    return d[edx][edy]; //终点坐标
+}
+```
+
+# 树与图
+
+## 1.存储
+
+```c++
+int h[N], e[M], ne[M], idx; //无向图 M = 2 * N
+void add(int a, int b)
+{
+    e[idx] = b, ne[idx] = h[a], h[a] = idx++;
+}
+memeset(h, -1, sizeof h); // h[]初始化
+```
+
+## 2.遍历
+
+### 1.深度优先搜索
+
+```c++
+bool st[N];
+void dfs(int u)
+{
+    st[u] = true; //表示已经被搜过了
+    for (int i = h[u]; i != -1; i = ne[i])
+    {
+        int j = e[i];
+        if (!st[j])
+            dfs[j];
+    }
+}
+```
+
+### 2.宽度优先搜索
+
+```c++
+int q[N];
+int bfs()
+{
+    int hh = 0, tt = 0;//因为已经有了第一个数，所以tt直接初始化为0而不是-1
+    memset(d, -1, sizeof d);
+    d[st] = 0;//st为起始点
+    q[0] = st;
+    while (hh <= tt)
+    {
+        int t = q[hh++];
+        for (int i = h[t]; i != -1; i = ne[i])
+        {
+            int j = e[i];
+            if (d[j] == -1)
+            {
+                d[j] = d[t] + 1;
+                q[++tt] = j;
+            }
+        }
+    }
+    return d[ed];//返回起点到终点ed的最短距离
+}
+```
+
+# 拓扑排序
+
+```c++
+int q[N], d[N]; // d[]存放每个点的入度，每输入一条边(a, b)时d[b]++;
+bool topsort()
+{
+    int hh = 0, tt = -1;
+    for (int i = 1; i <= n; i++)
+        if (!d[i])
+            q[++tt] = i;
+    while (hh <= tt)
+    {
+        int t = q[hh++];
+        for (int i = h[t]; i != -1; i = ne[i]) //枚举出边
+        {
+            int j = e[i];
+            d[j]--;
+            if (!d[j])
+                q[++tt] = j;
+        }
+    }
+    return tt == n - 1; //判断是否所有点入队
+}
+```
+
+# 最短路
+
+## 1.朴素Dijkstra
+
+适用于稀疏图：边数m ~ 点数n^2
+
+用邻接矩阵存储
+
+```c++
+int g[N][N], dist[N]; //d[]存储距离
+bool st[N];
+int dijksatra()
+{
+    memset(dist, 0x3f, sizeof dist);
+    dist[1] = 0;
+    for (int i = 0; i < n; i++)
+    {
+        int t = -1;
+        for (int j = 1; j <= n; j++)
+            if (!st[j] && (t == -1 || dist[t] > dist[j])) //找dist最小的点
+                t = j;
+        st[t] = true;
+        for (int j = 1; j <= n; j++)
+            dist[j] = min(dist[j], dist[t] + g[t][j]); //更新所有边
+    }
+    if (dist[n] == 0x3f3f3f3f)
+        return -1;
+    return dist[n];
+}
+//初始化
+memset(g, 0x3f, sizeof g);
+//输入时保留长度最短的边
+g[a][b] = min(g[a][b], c);
+```
+
+## 2.堆优化版Dijkstra
+
+适用于稠密图
+
+用邻接表存储
+
+```c++
+int h[N], e[N], w[N], ne[N], idx; // w[]存储权重
+int dist[N];
+bool st[N];
+int dijkstra()
+{
+    memset(dist, 0x3f, sizeof dist);
+    dist[1] = 0;
+    priority_queue<PII, vector<PII>, greater<PII>> heap;
+    heap.push({0, 1}); // 1是起点编号
+    while (!heap.empty())
+    {
+        PII t = heap.top();
+        heap.pop();
+        int ver = t.second, distance = t.first;
+        if (st[ver])
+            continue;
+        st[ver] = true;
+        for (int i = h[ver]; i != -1; i = ne[i])
+        {
+            int j = e[i];
+            if (dist[j] > distance + w[i])
+            {
+                dist[j] = distance + w[i];
+                heap.push({dist[j], j});
+            }
+        }
+    }
+    if (dist[n] == 0x3f3f3f3f)
+        return -1;
+    return dist[n];
+}
+```
+
+## 3.Bellman-Ford
+
+适用于有边数限制的问题
+
+```c++
+struct Edge
+{
+    int a, b, w;
+} edges[M];
+int dist[N], backup[N];
+int ballman_ford()
+{
+    memset(dist, 0x3f, sizeof dist);
+    dist[1] = 0;
+    for (int i = 0; i < k; i++)
+    {
+        memcpy(backup, dist, sizeof dist); //备份上一轮迭代的结果
+        for (int j = 0; j < m; j++)
+        {
+            int a = edges[j].a, b = edges[j].b, w = edges[j].w;
+            dist[b] = min(dist[b], backup[a] + w);
+        }
+    }
+    if (dist[n] > 0x3f3f3f3f / 2)
+        return -1; //表示无法从1号点走到n号点
+    return dist[n];
+}
+```
+
+## 4.SPFA
+
+```c++
+int spfa()
+{
+    memset(dist, 0x3f, sizeof dist);
+    dist[1] = 0;
+    queue<int> q;
+    q.push(1);
+    st[1] = true;
+    while (!q.empty())
+    {
+        int t = q.front();
+        q.pop();
+        st[t] = false;
+        for (int i = h[t]; i != -1; i = ne[i])
+        {
+            int j = e[i];
+            if (dist[j] > dist[t] + w[i])
+            {
+                dist[j] = dist[t] + w[i];
+                if (!st[j])
+                {
+                    q.push(j);
+                    st[j] = true;
+                }
+            }
+        }
+    }
+    if (dist[n] == 0x3f3f3f3f)
+        return -0x3f3f3f3f;
+    return dist[n];
+}
+
+//判断负环
+int cnt[N]; // cnt[]存储每个点经历了多少条边
+bool spfa()
+{
+    queue<int> q;
+    for (int i = 1; i <= n; i++) //将所有点放入
+    {
+        st[i] = true;
+        q.push(i);
+    }
+    while (!q.empty())
+    {
+        int t = q.front();
+        q.pop();
+        st[t] = false;
+        for (int i = h[t]; i != -1; i = ne[i])
+        {
+            int j = e[i];
+            if (dist[j] > dist[t] + w[i])
+            {
+                dist[j] = dist[t] + w[i];
+                cnt[j] = cnt[t] + 1;
+                if (cnt[j] >= n)
+                    return true;
+                if (!st[j])
+                {
+                    q.push(j);
+                    st[j] = true;
+                }
+            }
+        }
+    }
+    return false;
+}
+```
+
+## 5.Floyd
+
+```c++
+int d[N][N]; //邻接矩阵存储图
+void floyd()
+{
+    for (int k = 1; k <= n; k++)
+        for (int i = 1; i <= n; i++)
+            for (int j = 1; j <= n; j++)
+                d[i][j] = min(d[i][j], d[i][k] + d[k][j]);
+}
+
+//初始化
+for (int i = 1; i <= n; i++)
+    for (int j = 1; j <= n; j++)
+        if (i == j)
+            d[i][j] = 0;
+        else
+            d[i][j] = INF;
+d[x][y] = min(d[x][y], z);
+//判断x->y到不了
+d[x][y] > INF / 2
+```
+
+# 最小生成树
+
+## 1.朴素Prim
+
+适用于稀疏图
+
+```c++
+int prim()
+{
+    memset(dist, 0x3f, sizeof dist);
+    int res = 0;
+    for (int i = 0; i < n; i++)
+    {
+        int t = -1;
+        //找到当前集合外距离最小的点
+        for (int j = 1; j <= n; j++)
+            if (!st[j] && (t == -1 || dist[t] > dist[j]))
+                t = j;
+        if (i && dist[t] == INF) //图不连通
+            return INF;
+        if (i)
+            res += dist[t];
+        st[t] = true;
+        //用t更新其他点到集合的距离
+        for (int j = 1; j <= n; j++)
+            dist[j] = min(dist[j], g[t][j]);
+    }
+    return res;
+}
+```
+
+## 2.Kruskal
+
+```c++
+int p[N];
+struct Edge
+{
+    int a, b, w;
+    bool operator<(const Edge &W) const
+    {
+        return w < W.w;
+    }
+} edges[N];
+//并查集
+int find(int x)
+{
+    if (p[x] != x)
+        p[x] = find(p[x]);
+    return p[x];
+}
+
+//按权重从小到大排序
+sort(edges, edges + m);
+for (int i = 1; i <= n; i++)
+    p[i] = i;
+int res = 0, cnt = 0; // res存储最小生成树所有树边的权重之和，cnt存储加入边的个数
+//枚举所有边
+for (int i = 0; i < m; i++)
+{
+    int a = edges[i].a, b = edges[i].b, w = edges[i].w;
+    a = find(a), b = find(b);
+    if (a != b) // a和b不连通
+    {
+        p[a] = b;
+        res += w;
+        cnt++;
+    }
+}
+if (cnt < n - 1) //树不连通
+```
+
+
+
+# 二分图
+
+## 1.染色法
+
+用邻接表存储
+
+```c++
+bool dfs(int u, int c)
+{
+    color[u] = c;
+    for (int i = h[u]; i != -1; i = ne[i])
+    {
+        int j = e[i];
+        if (!color[j])
+        {
+            if (!dfs(j, 3 - c)) //染色成1和2；
+                return false;
+        }
+        else if (color[j] == c) //矛盾
+            return false;
+    }
+    return true;
+}
+
+bool flag = true;
+for (int i = 1; i <= n; i++)
+{
+    if (!color[i]) //没染色
+    {
+        if (!dfs(i, 1)) //出现矛盾
+        {
+            flag = false;
+            break;
+        }
+    }
+}
+if (flag) //是二分图
+```
+
+## 2.匈牙利算法
+
+求二分图最大匹配数量
+
+用邻接表存储
+
+```c++
+int match[N]; //存储右边的点和左边哪个点匹配
+bool st[N];
+bool find(int x)
+{
+    for (int i = h[x]; i != -1; i = ne[i])
+    {
+        int j = e[i];
+        if (!st[j])
+        {
+            st[j] = true;
+            if (match[j] == 0 || find(match[j])) //如果右边点未匹配或左边点可以和其他点匹配
+            {
+                match[j] = x;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+for (int i = 1; i <= n1; i++) //遍历左边的点
+{
+    memset(st, false, sizeof st);
+    if (find(i))
+        res++;
+}
+```
+
+# 质数
+
+## 1.判断质数
+
+```c++
+bool is_prime(int n)
+{
+    if (n <= 1)
+        return false;
+    for (int i = 2; i <= n / i; i++)
+        if (n % i == 0)
+            return false;
+    return true;
+}
+```
+
+## 2.分解质因数
+
+```c++
+void divide(int n)
+{
+    for (int i = 2; i <= n / i; i++) // x最多只有一个大于sqrt(x)的质因子
+    {
+        if (n % i == 0)
+        {
+            int s = 0;
+            while (n % i == 0)
+            {
+                n /= i;
+                s++;
+            }
+            printf("%d %d\n", i, s);
+        }
+    }
+    if (n > 1) // 说明剩下一个大于sqrt(x)的质因子 
+        printf("%d %d\n", n, 1);
+}
+```
+
+## 3.筛质数
+
+### 1.朴素
+
+```c++
+int primes[N], cnt;
+bool st[N]; // st[x]存储x是否被筛掉
+void get_primes(int n)
+{
+    for (int i = 2; i <= n; i++)
+    {
+        if (!st[i])
+        {
+            primes[cnt++] = i;
+            for (int j = i + i; j <= n; j += i)
+                st[j] = true;
+        }
+    }
+}
+```
+
+### 2.线性
+
+```c++
+void get_primes(int n)
+{
+    for (int i = 2; i <= n; i++)
+    {
+        if (!st[i])
+            primes[cnt++] = i;
+        for (int j = 0; primes[j] <= n / i; j++)
+        {
+            st[primes[j] * i] = true;
+            if (i % primes[j] == 0) //说明primes[j]一定是i的最小质因子
+                break;
+        }
+    }
+}
+```
+
+# 约数
+
+## 1.求所有约数
+
+```c++
+vector<int> get_divides(int n)
+{
+    vector<int> res;
+    for (int i = 1; i <= n / i; i++)
+    {
+        if (n % i == 0)
+        {
+            res.push_back(i);
+            if (i != n / i)
+                res.push_back(n / i);
+        }
+    }
+    sort(res.begin(), res.end());
+    return res;
+}
+```
+
+## 2.求约数
+
+N = p1 ^ a1 * p2 ^ a2 * ··· * pk ^ ak
+
+```c++
+unordered_map<int, int> hash; //用哈希表存储所有底数和指数
+for (int i = 2; i <= x / i; i++)
+{
+    while (x % i == 0)
+    {
+        x /= i;
+        hash[i]++;
+    }
+}
+if (x > 1)
+    hash[x]++;
+```
+
+### 1.求约数个数
+
+res = (a1 + 1) * (a2 + 1) * ··· * (ak + 1)
+
+```c++
+long long res = 1;
+for (auto item : hash)
+    res = res * (item.second + 1);
+```
+
+### 2.求约数之和
+
+res = (p1 ^ 0 + p1 ^ 1 + ··· + p1 ^ a1) * (p2 ^ 0 + p2 ^ 1 + ··· + p2 ^ a2) * ··· * (pk ^ 0 + pk ^ 1 + ··· + pk ^ ak)
+
+```c++
+long long res = 1;
+for (auto item : hash)
+{
+    int p = item.first, a = item.second;
+    long long t = 1;
+    // 求pk ^ 0 + pk ^ 1 + ··· + pk ^ ak
+    while (a--)
+        t = (t * p + 1) % mod;
+    res = res * t % mod;
+}
+```
+
+# 最大公约数
+
+```c++
+int gcd(int a, int b)
+{
+    return b ? gcd(b, a % b) : a;
+}
+//最小公倍数即 a * b / gcd(a,b)
+```
+
+# 欧拉函数
+
+欧拉定理：若a与n互质，则 a^ϕ(N) ≡ 1 (mod n)
+
+N = p1 ^ a1 * p2 ^ a2 * ··· * pk ^ ak
+
+ϕ(N) = N * (1 - 1/p1) * (1 - 1/p2) * ··· * (1 - 1/pk)
+
+## 1.朴素
+
+```c++
+int res = n;
+for (int i = 2; i <= n / i; i++)
+{
+    if (n % i == 0)
+    {
+        res = res / i * (i - 1);
+        while (n % i == 0)
+            n /= i;
+    }
+}
+if (n > 1)
+    res = res / n * (n - 1);
+```
+
+## 2.筛法
+
+```c++
+int primes[N], cnt;
+int phi[N];
+bool st[N];
+long long get_eulers(int n)
+{
+    phi[1] = 1;
+    for (int i = 2; i <= n; i++)
+    {
+        if (!st[i])
+        {
+            primes[cnt++] = i;
+            phi[i] = i - 1; // i是质数，所以 1 ~ i-1 都与他互质
+        }
+        for (int j = 0; primes[j] <= n / i; j++)
+        {
+            st[primes[j] * i] = true;
+            if (i % primes[j] == 0)
+            {
+                phi[primes[j] * i] = primes[j] * phi[i]; //(primes[j] * i)与 i 的质数组成相同
+                break;
+            }
+            phi[primes[j] * i] = phi[i] * (primes[j] - 1); //(primes[j] * i)只比 i 的质数组成多了 primes[j]
+        }
+    }
+    
+    //求 1 ~ n 中每个数的欧拉之和
+    long long res = 0;
+    for (int i = 1; i <= n; i++)
+        res += phi[i];
+    return res;
+}
+```
+
+# 快速幂
+
+求 a^k % p
+
+```c++
+int qmi(int a, int k, int p)
+{
+    int res = 1;
+    while (k)
+    {
+        if (k & 1)
+            res = (long long)res * a % p;
+        k >>= 1;
+        a = (long long)a * a % p;
+    }
+    return res;
+}
+```
+
+# 扩展欧几里得
+
+求满足 a * x + b * y = gcd(a, b) 的 x 和 y
+
+```c++
+int exgcd(int a, int b, int &x, int &y)
+{
+    if (!b) // a * x + 0 * y = gcd(a, b) = a
+    {
+        x = 1, y = 0;
+        return a;
+    }
+    int d = exgcd(b, a % b, y, x); //d为a和b的最大公约数即gcd(a, b)
+    // a % b = a - int(a / b) * b
+    // (a % b) * x + b * y = a * x + b * (y - a / b * x) = gcd(a, b)
+    y -= a / b * x;
+    return d;
+}
+```
+
+# 逆元
+
+b与m互质且对于任意整除b的a，有a / b = a * x (mod m) 则x为b的逆元
+
+## 1.m为质数时
+
+费马小定理: a ^ (p - 1) ≡ 1 (mod p)   
+
+所以 a * a ^ (p - 2) ≡ 1 (mod p)
+
+```c++
+long long res = qmi(a, p - 2, p); //快速幂
+if (a % p == 0) // 逆元不存在 
+```
+
+## 2.m不为质数时
+
+```c++
+if (a > p)
+    swap(a, p);
+int d = exgcd(a, p, x, y); //扩展欧几里得算法
+if (d == 1) //逆元存在
+    res = ((LL)x + p) % p;
+```
+
+# 高斯消元
+
+```c++
+double a[N][N + 1];
+int gauss()
+{
+    int c, r; // c为列数，r为行数
+    for (c = 0, r = 0; c < n; c++)
+    {
+        int t = r;
+        //找同一列中绝对值最大的数
+        for (int i = r; i < n; i++)
+            if (fabs(a[i][c]) > fabs(a[t][c]))
+                t = i;
+        if (fabs(a[t][c]) < eps) //同一列全为0
+            continue;
+        for (int i = c; i <= n; i++)
+            swap(a[t][i], a[r][i]); //将t行换到最上面
+        for (int i = n; i >= c; i--)
+            a[r][i] /= a[r][c]; //将第一个数化为1
+        //将下面所有行的c列化为0
+        for (int i = r + 1; i < n; i++)
+            if (fabs(a[i][c]) > eps)
+                for (int j = n; j >= c; j--)
+                    a[i][j] -= a[r][j] * a[i][c]; // a[i][j] / a[i][c] - a[r][j] -> a[i][j]
+        r++;
+    }
+    if (r < n) //有某几行前n个数都为0
+    {
+        for (int i = r; i < n; i++)
+            if (fabs(a[i][n]) > eps)
+                return 2; //无解
+        return 1;         //有无数个解
+    }
+    for (int i = n - 1; i >= 0; i--)
+    {
+        for (int j = i + 1; j < n; j++)
+            a[i][n] -= a[i][j] * a[j][n];
+        if (fabs(a[i][n]) < eps)
+            a[i][n] = 0;
+    }
+    return 0; //有唯一解
+}
+```
+
+# 组合数
+
+## 1. n <= 10000, b <= a <= 2000
+
+```c++
+int c[N][N];
+void init() //预处理
+{
+    for (int i = 0; i < N; i++)
+        for (int j = 0; j <= i; j++)
+            if (!j)
+                c[i][j] = 1;
+            else
+                c[i][j] = (c[i - 1][j - 1] + c[i - 1][j]) % mod;
+}
+```
+
+## 2. n <= 10000, b <= a <= 1e5, mod为质数
+
+```c++
+int fact[N], infact[N];
+void init() //预处理
+{
+    fact[0] = infact[0] = 1;
+    for (int i = 1; i < N; i++)
+    {
+        fact[i] = (LL)fact[i - 1] * i % mod;
+        infact[i] = (LL)infact[i - 1] * qmi(i, mod - 2, mod) % mod;
+    }
+}
+int res = (LL)fact[a] * infact[b] % mod * infact[a - b] % mod
+```
+
+## 3. n <= 20, b <= a <= 1e18, p <= 1e5 且 p为质数
+
+```c++
+int p;
+int C(int a, int b)
+{
+    int res = 1;
+    for (int i = 1, j = a; i <= b; i++, j--)
+    {
+        res = (LL)res * j % p;
+        res = (LL)res * qmi(i, p - 2) % p;
+    }
+    return res;
+}
+int lucas(LL a, LL b)
+{
+    if (a < p && b < p)
+        return C(a, b);
+    return (LL)C(a % p, b % p) * lucas(a / p, b / p) % p;
+}
+```
+
+## 4. b <= a <= 5000
+
+```c++
+int sum[N]; // s[]存储每个质数的个数
+int get(int n, int p)
+{
+    int res = 0;
+    while (n)
+    {
+        res += n / p;
+        n /= p;
+    }
+    return res;
+}
+get_primes(a); //质数筛
+for (int i = 0; i < cnt; i++)
+{
+    int p = primes[i];
+    sum[i] = get(a, p) - get(b, p) - get(a - b, p);
+}
+vector<int> res;
+res.push_back(1);
+for (int i = 0; i < cnt; i++)
+    for (int j = 0; j < sum[i]; j++)
+        res = mul(res, primes[i]); //高精度乘法
+```
+
+## 5.卡特兰数
+
+C(2 * n, n) / (n + 1)
+
+```c++
+int a = 2 * n, b = n;
+int res = 1;
+for (int i = a; i > a - b; i--)
+    res = (LL)res * i % mod;
+for (int i = 1; i <= b; i++)
+    res = (LL)res * qmi(i, mod - 2, mod) % mod;
+res = (LL)res * qmi(n + 1, mod - 2, mod) % mod;
+```
+
+# 容斥原理
+
+```c++
+//状态压缩,i第k位的数(0或1)就表示1~n中k(是否选中)
+for (int i = 1; i < 1 << m; i++) // 1 << m 表示 2^m
+{
+    int t = 1, cnt = 0;
+    for (int j = 0; j < m; j++) //找到i中第j位
+        if (i >> j & 1)         // 1~n中j选中了
+        {
+            cnt++;
+            if ((LL)t * p[j] > n)
+            {
+                t = -1;
+                break;
+            }
+            t *= p[j];
+        }
+    if (t != -1)
+    {
+        if (cnt % 2)
+            res += n / t;
+        else
+            res -= n / t;
+    }
+}
+```
+
+# 博弈论
+
+## 1.Nim游戏
+
+```c++
+while (n--)
+{
+    int x;
+    scanf("%d", &x);
+    res ^= x;
+}
+if (res) // a1 ^ a2 ^ a3 ^ ··· ^ an ！= 0 是先手必胜状态
+```
+
+## 2.sg函数
+
+在有向图游戏中，对于每个节点x，设从x出发共有k条有向边，分别到达节点y1, y2, …, yk，定义SG(x)为x的后继节点y1, y2, …, yk 的SG函数值构成的集合再执行mex(S)运算的结果，即：
+
+SG(x) = mex({SG(y1), SG(y2), …, SG(yk)})
+
+特别地，整个有向图游戏G的SG函数值被定义为有向图游戏起点s的SG函数值，即SG(G) = SG(s)。
+
+注：Mex运算
+设S表示一个非负整数集合。定义mex(S)为求出不属于集合S的最小非负整数的运算，即：
+mex(S) = min{x}, x属于自然数，且x不属于S
+
+```c++
+int s[N], f[M];
+int sg(int x)
+{
+    if (f[x] != -1)
+        return f[x];
+    unordered_set<int> S;
+    for (int i = 0; i < m; i++)
+    {
+        int sum = s[i];
+        if (x >= sum)
+            S.insert(sg(x - sum));
+    }
+    for (int i = 0;; i++)
+        if (!S.count(i))
+            return f[x] = i;
+}
+memset(f, -1, sizeof f);
+```
+
