@@ -1,3 +1,45 @@
+# 链表逆序
+
+```c++
+int Inverse(LinkList L)
+{
+    LinkNode *p = L->next;
+    L->next = NULL;
+    while (p != nullptr)
+    {
+        LinkNode *q = p;
+        p = p->next;
+        q->next = L->next;
+        L->next = q;
+    }
+    return 0;
+}
+```
+
+#  m*n矩阵动态分配内存
+
+```c++
+// m已知，n未知
+int *s[m];
+s[0] = new int[m * n];
+for (int i = 0; i < m; i++)
+    s[i] = s[i - 1] + n;
+delete[] s[0];
+
+// m未知，n已知
+int(*) s[n];
+s = new int[m][n];
+delete[] s;
+
+// m，n都未知
+int **s;
+s = new int[m * n];
+for (int i = 0; i < m; i++)
+    s[i] = s[i - 1] + n;
+delete[] s[0];
+delete[] s;
+```
+
 # 进制转化
 
 ## 1.其他进制转十进制
