@@ -1,21 +1,3 @@
-# 链表逆序
-
-```c++
-int Inverse(LinkList L)
-{
-    LinkNode *p = L->next;
-    L->next = NULL;
-    while (p != nullptr)
-    {
-        LinkNode *q = p;
-        p = p->next;
-        q->next = L->next;
-        L->next = q;
-    }
-    return 0;
-}
-```
-
 #  m*n矩阵动态分配内存
 
 ```c++
@@ -92,15 +74,6 @@ while (cin >> k)
     nums.push_back(k);
     if (cin.get() == '\n')
         break;
-}
-```
-
-# 四舍五入
-
-```c++
-int round_double(double number)
-{
-    return (number > 0.0) ? (number + 0.5) : (number - 0.5);
 }
 ```
 
@@ -276,17 +249,11 @@ vector<int> sub(vector<int> &A, vector<int> &B)
     return C;
 }
 /*if (cmp(A, B))
-{
     auto C = sub(A, B);
-    for (int i = C.size() - 1; i >= 0; i--)
-        cout << C[i];
-}
 else
 {
     auto C = sub(B, A);
     printf("-");
-    for (int i = C.size() - 1; i >= 0; i--)
-        cout << C[i];
 }*/
 ```
 
@@ -472,6 +439,24 @@ void remove(int k)
 head = ne[head];
 //遍历
 for (int i = head; i != -1; i = ne[i])
+```
+
+# 链表逆序
+
+```c++
+int Inverse(LinkList L)
+{
+    LinkNode *p = L->next;
+    L->next = NULL;
+    while (p != nullptr)
+    {
+        LinkNode *q = p;
+        p = p->next;
+        q->next = L->next;
+        L->next = q;
+    }
+    return 0;
+}
 ```
 
 # 双链表
@@ -1239,6 +1224,19 @@ bool is_prime(int n)
             return false;
     return true;
 }
+
+// x < 1e18
+bool is_prime(long long x)
+{
+    if (x <= 3)
+        return x > 1;
+    if (x % 6 != 1 && x % 6 != 5)
+        return 0;
+    for (int i = 5; i <= x / i; i += 6)
+        if (x % i == 0 || x % (i + 2) == 0)
+            return 0;
+    return 1;
+}
 ```
 
 ## 2.分解质因数
@@ -1581,7 +1579,7 @@ void init() //预处理
         infact[i] = (LL)infact[i - 1] * qmi(i, mod - 2, mod) % mod;
     }
 }
-int res = (LL)fact[a] * infact[b] % mod * infact[a - b] % mod
+int res = (LL)fact[a] * infact[b] % mod * infact[a - b] % mod;
 ```
 
 ## 3. n <= 20, b <= a <= 1e18, p <= 1e5 且 p为质数
