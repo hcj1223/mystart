@@ -1,2 +1,2 @@
-###### i am a <font color="#dd0000">noooooooob</font>!
+###### i am a noooooooob!
 ###### thx for watching!
