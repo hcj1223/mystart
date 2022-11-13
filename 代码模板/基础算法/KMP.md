@@ -38,7 +38,7 @@ int findpos(char s[], char t[], int ne[])
 ## 2.下标从 0 开始
 
 ```c++
-void getNext(char t[], int ne[])
+void getnext(char t[], int ne[])
 {
     ne[0] = -1;
     for (int i = 1, j = -1; t[i]; i++)
