@@ -1,34 +1,26 @@
 # Kruskal
 
 ```c++
-int p[N];
-struct Edge
+/*
+适用于稀疏图
+*/
+struct node
 {
     int a, b, w;
-    bool operator<(const Edge &W) const
+    bool operator<(const node &W) const
     {
         return w < W.w;
     }
-} edges[N];
-//并查集
-int find(int x)
-{
-    if (p[x] != x)
-        p[x] = find(p[x]);
-    return p[x];
-}
+} e[N];
 
 //按权重从小到大排序
-sort(edges, edges + m);
-for (int i = 1; i <= n; i++)
-    p[i] = i;
+sort(e, e + m);
 int res = 0, cnt = 0; // res存储最小生成树所有树边的权重之和，cnt存储加入边的个数
-//枚举所有边
 for (int i = 0; i < m; i++)
 {
-    int a = edges[i].a, b = edges[i].b, w = edges[i].w;
-    a = find(a), b = find(b);
-    if (a != b) // a和b不连通
+    int a = e[i].a, b = e[i].b, w = e[i].w;
+    a = find(a), b = find(b); //并查集
+    if (a != b)               // a和b不连通
     {
         p[a] = b;
         res += w;
@@ -37,3 +29,4 @@ for (int i = 0; i < m; i++)
 }
 if (cnt < n - 1) //树不连通
 ```
+
