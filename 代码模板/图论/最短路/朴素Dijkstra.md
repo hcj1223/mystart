@@ -1,4 +1,4 @@
-# Dijkstra
+# 朴素Dijkstra
 
 ```c++
 /*
