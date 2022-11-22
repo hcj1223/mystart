@@ -6,7 +6,7 @@
 */
 int prim()
 {
-    //如果a, b之间已连通，则令g[a][b] = g[b][a] = 0
+    //如果a, b之间已在集合内，则令g[a][b] = g[b][a] = 0
     memset(dist, 0x3f, sizeof dist);
     int res = 0;
     for (int i = 0; i < n; i++)
