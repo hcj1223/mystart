@@ -45,35 +45,7 @@ else
 
 ![集合nim](https://user-images.githubusercontent.com/95573252/206850168-f3887e32-dd33-4fe4-a764-5de59d7d999c.png)
 
-```c++
-int res = 0;
-for (int i = 0; i < m; i++)
-{
-    int x;
-    cin >> x;
-    res ^= sg(x);
-}
-if (res)
-    cout << "Yes";
-else
-    cout << "No";
-```
-
 ### 4.拆分-Nim
 
 ![拆分nim](https://user-images.githubusercontent.com/95573252/206850185-976ab657-d8e7-4420-901f-af9f579662b5.png)
-
-```c++
-int res = 0;
-for (int i = 0; i < n; i++)
-{
-    int x;
-    cin >> x;
-    res ^= sg(x);
-}
-if (res)
-    cout << "Yes";
-else
-    cout << "No";
-```
 
