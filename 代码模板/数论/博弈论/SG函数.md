@@ -1,5 +1,7 @@
 # SG函数
 
+![sg函数](https://user-images.githubusercontent.com/95573252/206846767-533341ee-dd7d-4bc5-ac23-27b0f4e87d20.png)
+
 ```c++
 int s[N], f[M];
 memset(f, -1, sizeof f);
