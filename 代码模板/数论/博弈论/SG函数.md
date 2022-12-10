@@ -13,11 +13,11 @@ int sg(int x)
     for (int i = 0; i < n; i++)
         if (x >= s[i]) //能走到下一步
             S.insert(sg(x - s[i]));
-    /*
-        for (int i = 0; i < x; i++)
-            for (int j = 0; j <= i; j++)
-                S.insert(sg(i) ^ sg(j)); // sg(i, j) = sg(i) ^ sg(j)
-    */
+/*
+    for (int i = 0; i < x; i++)
+        for (int j = 0; j <= i; j++)
+            S.insert(sg(i) ^ sg(j)); // sg(i, j) = sg(i) ^ sg(j)
+*/
     for (int i = 0;; i++) // 求 mex(S) 的值
         if (!S.count(i))
             return dp[x] = i;
