@@ -1,0 +1,23 @@
+.gitignore
+
+# Mac
+.DS_STORE
+
+# C++ compiled files
+*.o
+*.obj
+*.out
+*.exe
+*.a
+*.so
+*.dylib
+*.dll
+*.lib
+
+# Executable files (no extension)
+*
+!*/
+!*.*
+!Makefile
+!README
+!LICENSE
