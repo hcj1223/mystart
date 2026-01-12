@@ -13,11 +13,3 @@
 *.dylib
 *.dll
 *.lib
-
-# Executable files (no extension)
-*
-!*/
-!*.*
-!Makefile
-!README
-!LICENSE
